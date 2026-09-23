@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 function Home() {
   const [pokemons, setPokemons] = useState([]);
@@ -12,14 +13,16 @@ function Home() {
   useEffect(() => {
     async function obtenerPokemon() {
       try {
+        //Tengo los datos de los primeros 151 pokemons
         const response = await fetch(
           "https://pokeapi.co/api/v2/pokemon?limit=151",
         );
         if (!response.ok) {
           throw new Error("Respuesta no válida del servidor");
         }
-        const data = await response.json();
+        const data = await response.json(); 
 
+        //Actualizo el estado de los pokemon,se va mapeando uno x uno
         setPokemons(
           data.results.map((item) => {
             const id = item.url.split("/").filter(Boolean).pop();
@@ -31,6 +34,8 @@ function Home() {
           }),
         );
 
+        //Segundo Fetch dentro del mismo Async
+        //Obtengo los tipos de pokemons
         const responseTipos = await fetch("https://pokeapi.co/api/v2/type/");
         if (!responseTipos.ok) {
           throw new Error("Respuesta no válida del servidor");
@@ -38,21 +43,25 @@ function Home() {
         const dataTipos = await responseTipos.json();
         setTipos(dataTipos.results.map((tipo) => tipo.name));
 
+        //Aquí dejo de cargar los tipos
         setLoading(false);
       } catch (error) {
         setError("No se pudieron cargar los Pokémon");
         setLoading(false);
       }
     }
+    //Mando llamar la función
     obtenerPokemon();
   }, []);
 
+  //Aquí si el tipo no es ninguno devuelve vacio
   useEffect(() => {
     if (tipoSeleccionado === "") {
       setPokemonsDelTipo([]);
       return;
     }
 
+    //Con el tipo proporcionado, fetch a la API + tipoSeleccionado
     async function cargarTipo() {
       try {
         const responseTipo = await fetch(
@@ -63,6 +72,7 @@ function Home() {
         }
         const dataTipo = await responseTipo.json();
 
+        //Mapeo de los pokemon obtenidos
         setPokemonsDelTipo(
           dataTipo.pokemon
             .map((p) => {
@@ -123,17 +133,16 @@ function Home() {
 
           <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {filtrados.map((p) => (
-              <div
-                key={p.id}
-                className="rounded-xl bg-white p-4 text-center shadow-sm transition hover:shadow-md"
-              >
-                <img
-                  src={p.imagen}
-                  alt={p.name}
-                  className="mx-auto h-24 w-24 object-contain"
-                />
-                <p className="mt-2 font-semibold capitalize">{p.name}</p>
-              </div>
+              <Link key={p.id} to={`/pokemon/${p.id}`} className="block">
+                <div className="rounded-xl bg-white p-4 text-center shadow-sm transition hover:shadow-md">
+                  <img
+                    src={p.imagen}
+                    alt={p.name}
+                    className="mx-auto h-24 w-24 object-contain"
+                  />
+                  <p className="mt-2 font-semibold capitalize">{p.name}</p>
+                </div>
+              </Link>
             ))}
           </div>
         </>
