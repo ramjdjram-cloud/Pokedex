@@ -9,6 +9,9 @@ function Home() {
   const [tipos, setTipos] = useState([]);
   const [tipoSeleccionado, setTipoSeleccionado] = useState("");
   const [pokemonsDelTipo, setPokemonsDelTipo] = useState([]);
+  const [favoritos, setFavoritos] = useState(() => {
+    return JSON.parse(localStorage.getItem("favoritos") || "[]");
+  });
 
   useEffect(() => {
     async function obtenerPokemon() {
@@ -99,6 +102,15 @@ function Home() {
     p.name.includes(busqueda.toLowerCase()),
   );
 
+  function toggleFavorito(id) {
+    const nuevos = favoritos.includes(id)
+      ? favoritos.filter((f) => f !== id)
+      : [...favoritos, id];
+
+    setFavoritos(nuevos);
+    localStorage.setItem("favoritos", JSON.stringify(nuevos));
+  }
+
   return (
     <main className="mx-auto max-w-5xl px-4 py-8">
       <h1 className="text-3xl font-bold">Pokédex</h1>
@@ -133,18 +145,28 @@ function Home() {
 
           <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {filtrados.map((p) => (
-              <Link key={p.id} to={`/pokemon/${p.id}`} className="block">
-                <div className="rounded-xl bg-white p-4 text-center shadow-sm transition hover:shadow-md">
-                  <img
-                    src={p.imagen}
-                    alt={p.name}
-                    className="mx-auto h-24 w-24 object-contain"
-                  />
-                  <p className="mt-2 font-semibold capitalize">{p.name}</p>
-                </div>
-              </Link>
+              <div key={p.id} className="relative">
+                <button
+                  onClick={() => toggleFavorito(p.id)}
+                  className="absolute right-2 top-2 text-xl"
+                >
+                  {favoritos.includes(p.id) ? "❤️" : "🤍"}
+                </button>
+                <Link to={`/pokemon/${p.id}`} className="block">
+                  <div className="rounded-xl bg-white p-4 text-center shadow-sm transition hover:shadow-md">
+                    <img
+                      src={p.imagen}
+                      alt={p.name}
+                      className="mx-auto h-24 w-24 object-contain"
+                    />
+                    <p className="mt-2 font-semibold capitalize">{p.name}</p>
+                  </div>
+                </Link>
+              </div>
             ))}
           </div>
+
+          
         </>
       )}
     </main>

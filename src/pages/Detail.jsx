@@ -27,6 +27,9 @@ function Detail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { id } = useParams();
+  const [favoritos, setFavoritos] = useState(() => {
+    return JSON.parse(localStorage.getItem("favoritos") || "[]");
+  });
 
   useEffect(() => {
     async function obtenerPokemon() {
@@ -98,6 +101,8 @@ function Detail() {
               </div>
             ))}
           </div>
+
+          
         </div>
       )}
     </main>
