@@ -102,10 +102,11 @@ function Home() {
     p.name.includes(busqueda.toLowerCase()),
   );
 
-  function toggleFavorito(id) {
-    const nuevos = favoritos.includes(id)
-      ? favoritos.filter((f) => f !== id)
-      : [...favoritos, id];
+  function toggleFavorito(p) {
+    const esFavorito = favoritos.some((f) => f.id === p.id);
+    const nuevos = esFavorito
+      ? favoritos.filter((f) => f.id !== p.id)
+      : [...favoritos, p];
 
     setFavoritos(nuevos);
     localStorage.setItem("favoritos", JSON.stringify(nuevos));
@@ -147,10 +148,10 @@ function Home() {
             {filtrados.map((p) => (
               <div key={p.id} className="relative">
                 <button
-                  onClick={() => toggleFavorito(p.id)}
+                  onClick={() => toggleFavorito(p)}
                   className="absolute right-2 top-2 text-xl"
                 >
-                  {favoritos.includes(p.id) ? "❤️" : "🤍"}
+                  {favoritos.some((f) => f.id === p.id) ? "❤️" : "🤍"}
                 </button>
                 <Link to={`/pokemon/${p.id}`} className="block">
                   <div className="rounded-xl bg-white p-4 text-center shadow-sm transition hover:shadow-md">

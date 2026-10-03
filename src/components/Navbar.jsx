@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link } from "react-router-dom";
 
 function Navbar() {
   return (
@@ -7,9 +7,11 @@ function Navbar() {
         <Link to="/" className="text-2xl font-bold tracking-tight">
           🐾 Pokédex
         </Link>
+        <Link to="/favoritos" className="font-semibold hover:underline">
+          ⭐ Favoritos
+        </Link>
       </nav>
     </header>
-  )
+  );
 }
-
-export default Navbar
+export default Navbar;
